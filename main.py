@@ -168,4 +168,42 @@ all_data['Exterior1st'] = all_data['Exterior1st'].fillna(all_data['Exterior1st']
 all_data['SaleType'] = all_data['SaleType'].fillna(all_data['SaleType'].mode()[0])
 
 
+"""
+Stage 2: Outliers!
+
+In statistics, an outlier is an observation point that is distant from other observations. usually the distance is measured by standard deviations. such points are usually produced by some sort of error or simply do not represent any real data and just get in the way to make our predictions less accurate.
+
+The approach we're going to go with is simply remove data that's below the 0.05 percentile or above the 0.9 percentile (check out this link to better understand quantiles and percentiles: http://www.statisticshowto.com/quantile-definition-find-easy-steps/).
+"""
+
+from pandas.api.types import is_numeric_dtype
+def remove_outliers(df):
+    low = .05
+    high = .9
+    quant_df = df.quantile([low, high])
+    for name in list(df.columns):
+        if is_numeric_dtype(df[name]):
+            df = df[(df[name] > quant_df.loc[low, name]) & (df[name] < quant_df.loc[high, name])]
+    return df
+
+remove_outliers(all_data).head()
+
+# doesn't see like we have any outliers in the chosen quantile.
+# Nonetheless, i would like to explore the feature 'GrLivArea' and see if i could visually spot outliers.
+
+plt.scatter(x = train['GrLivArea'], y = train['SalePrice'])
+plt.ylabel('SalePrice', fontsize=13)
+plt.xlabel('GrLivArea', fontsize=13)
+plt.show()
+
+# We can see at the bottom right two with extremely large GrLivArea that are of a low price. These values are huge oultliers (those bastards). Therefore, we can safely delete them
+# Deleting outliers
+tempTrain = train.drop(train[(train['GrLivArea']>4000) & (train['SalePrice']<300000)].index)
+
+plt.scatter(x = tempTrain['GrLivArea'], y = tempTrain['SalePrice'])
+plt.ylabel('SalePrice', fontsize=13)
+plt.xlabel('GrLivArea', fontsize=13)
+plt.show()
+
+
 
