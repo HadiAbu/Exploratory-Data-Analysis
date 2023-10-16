@@ -7,3 +7,6 @@ This kernal was made for all the dreamers out there that took the path of bravey
 I hope you will find value in the content that I'm about to share, don't forget to share the love by upvoting this project of mine. it would be a great sign of support, love and apprecation. A great shoutout for kaggle as well from making all of this possible.
 
 Hurrah!!
+
+A full explination of this project is found on Kaggle:
+https://www.kaggle.com/code/callmeriver/exploratory-data-analysis-averaging-ml-algorithms
