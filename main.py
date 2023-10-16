@@ -105,5 +105,67 @@ plt.ylabel('percentage of missing data')
 plt.title('percent of missing data by feature')
 plt.show()
 
+#Since most of this data is missing and since such data does not seem to be if high correlation with our dependent variable. let's go ahead and drop them!
+
+# columns to be dropped
+columnsToDrop = missingData[missingData['Percentage']>50].index
+
+all_data = all_data.drop(columnsToDrop, axis=1)
+# test = test.drop(columnsToDrop, axis=1)
+print(all_data.shape)
+
+"""
+Handling categorcial missing data
+
+We will replace missing data for the catigorical features with None
+BsmtQual, BsmtCond, BsmtExposure, BsmtFinType1 and BsmtFinType2 : For all these categorical basement-related features, NaN means that there is no basement.
+FireplaceQu, GarageType, GarageFinish, GarageQual and GarageCond : Replacing missing data with None
+"""
+
+for col in ('BsmtQual', 'BsmtCond', 'BsmtExposure', 
+            'BsmtFinType1', 'BsmtFinType2','BsmtFullBath', 'BsmtHalfBath',
+            'GarageType', 'GarageFinish', 'GarageQual', 'BsmtUnfSF','BsmtFinSF1','BsmtFinSF2',
+            'GarageCond', 'FireplaceQu', 'MasVnrType', 'Exterior2nd'):
+    if col in all_data.columns:
+        all_data[col] = all_data[col].fillna('None')
+
+# Handling numerical missing data
+
+#GarageYrBlt replacing missing data with 0
+all_data['GarageYrBlt'] = all_data['GarageYrBlt'].fillna(0)
+
+# NA most likely means no masonry veneer for these houses. We can fill in 0
+all_data["MasVnrArea"] = all_data["MasVnrArea"].fillna(0)
+
+# let's drop YrSold since it's also not correlated with 'SalePrice'
+all_data = all_data.drop('YrSold', axis=1)
+
+# Electrical has one NA value. Since this feature has mostly 'SBrkr', we can set that for the missing value.
+all_data['Electrical'] = all_data['Electrical'].fillna(all_data['Electrical'].mode()[0])
+
+# 'RL' is by far the most common value. So we can fill in missing values with 'RL'
+all_data['MSZoning'] = all_data['MSZoning'].fillna(all_data['MSZoning'].mode()[0])
+
+# For this categorical feature all records are "AllPub", except for one "NoSeWa" and 2 NA . 
+# Since the house with 'NoSewa' is in the training set, this feature won't help in predictive modelling.
+all_data = all_data.drop(['Utilities'], axis=1)
+
+# data description says NA means typical
+all_data["Functional"] = all_data["Functional"].fillna("Typ")
+
+# Group by neighborhood and fill in missing value by the median LotFrontage of all the neighborhood
+all_data["LotFrontage"] = all_data.groupby("Neighborhood")["LotFrontage"].transform(
+    lambda x: x.fillna(x.median()))
+
+
+#  Replacing missing data with 0 (Since missing in this case would imply 0.)
+for col in ('TotalBsmtSF', 'GarageArea', 'GarageCars'):
+    all_data[col] = all_data[col].fillna(0)
+    
+#  Replacing missing data with the most common
+all_data['KitchenQual'] = all_data['KitchenQual'].fillna(all_data['KitchenQual'].mode()[0])
+all_data['Exterior1st'] = all_data['Exterior1st'].fillna(all_data['Exterior1st'].mode()[0])
+all_data['SaleType'] = all_data['SaleType'].fillna(all_data['SaleType'].mode()[0])
+
 
 
